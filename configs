@@ -1,0 +1,9 @@
+run ds server:
+
+./ds-server -c ../../configs/sample-configs/ds-sample-config01.xml -v brief -n 
+
+run client:
+
+java MyClient.java
+
+
