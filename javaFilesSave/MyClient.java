@@ -5,31 +5,31 @@
     try{      
     Socket socket = new Socket("localhost", 50000);
       
-    DataOutputStream dout=new DataOutputStream(socket.getOutputStream()); 
+    DataOutputStream dout = new DataOutputStream(socket.getOutputStream()); 
     
     BufferedReader bin = new BufferedReader(new InputStreamReader(socket.getInputStream()));
      
     dout.write(("HELO\n").getBytes());  
     
     String str = (String)bin.readLine();  
-    System.out.println("message = "+str); 
+    System.out.println("message1 = "+str); 
     
     String username = System.getProperty("user.name");
     
     dout.write(("AUTH "+username+"\n").getBytes());
     
     str = (String)bin.readLine();  
-    System.out.println("message = "+str); 
+    System.out.println("message2 = "+str); 
     
     dout.write(("REDY\n").getBytes());
     
     String job = (String)bin.readLine();  
-    System.out.println("message = "+job); 
+    System.out.println("message3 = "+job); 
     
     dout.write(("GETS All\n").getBytes());
     
     String data = (String)bin.readLine();  
-    System.out.println("message = "+data); 
+    System.out.println("message4 = "+data); 
     String[] dataInfo = data.split(" ");
     Integer totalServers = Integer.parseInt(dataInfo[1]);
     
@@ -38,44 +38,52 @@
     String biggestServer = null;
     Integer biggestCores = 0;
     String checkServer = null;
+    Integer totalServersOfType = 0;
     
     for (Integer i = 0; i < totalServers; i++) {
-    	checkServer = bin.readLine();;
-    	System.out.println(checkServer);
+    
+    	checkServer = bin.readLine();
     	String[] checkServerPars = checkServer.split(" ");
-    	System.out.println("checking: "+Integer.parseInt(checkServerPars[4]));
-    	if (Integer.parseInt(checkServerPars[4]) >= biggestCores | biggestServer == null) {
+    	
+    	if (Integer.parseInt(checkServerPars[4]) > biggestCores | biggestServer == null) {
     		biggestServer = checkServer;
+    		biggestCores = Integer.parseInt(checkServerPars[4]);
+    	}
+    	
+    	String[] biggestServerPars = biggestServer.split(" ");
+    	String serverName = biggestServerPars[0];
+    	
+    	if (checkServerPars[0].equals(serverName)) {
+    		totalServersOfType = Integer.parseInt(checkServerPars[1]);
     	}
     }
     
-    System.out.println("done "+biggestServer);
-    
     String[] biggestServerPars = biggestServer.split(" ");
     String serverName = biggestServerPars[0];
-    Integer totalServersOfType = Integer.parseInt(biggestServerPars[1]);
     Integer serverNumber = 0;
+    Integer doJobs = 0;
     
     dout.write(("OK\n").getBytes());
     
-    //dout.write(("SCHD 0 "+serverName+" "+serverNumber+"\n").getBytes());
-    
-    //str = (String)bin.readLine();  
-    //System.out.println("message = "+str); 
-    
-    Integer doJobs = 0;
-    
     String jobPars = (String)bin.readLine();  
-    System.out.println("What to do: "+jobPars); 
     	
     String[] checkJobPars = jobPars.split(" ");
+    
+    if (serverNumber > totalServersOfType) {
+    	serverNumber = 0;
+    }	
+    	
+    dout.write(("SCHD "+doJobs+" "+serverName+" "+serverNumber+"\n").getBytes());
+    doJobs++;
+    serverNumber++;
+    	
+    str = (String)bin.readLine();  
     
     while(!checkJobPars[0].equals("NONE")) {
     	
     	dout.write(("REDY\n").getBytes());
     	
     	jobPars = (String)bin.readLine();  
-    	System.out.println("What to do: "+jobPars); 
     	
      	checkJobPars = jobPars.split(" ");
     	
@@ -94,16 +102,12 @@
     		continue;
     	}
     	
-    	
     	str = (String)bin.readLine();  
-    	System.out.println("message = "+str);
     }
     
     dout.write(("QUIT\n").getBytes()); 
     
     str=(String)bin.readLine();  
-    System.out.println("message = "+str); 
-    
     
     dout.flush();  
     dout.close();  
