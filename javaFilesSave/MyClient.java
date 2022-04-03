@@ -2,34 +2,35 @@
     import java.net.*;  
     public class MyClient {  
     public static void main(String[] args) {  
-    try{      
+    try{   
+    
+    //Creates relevant instances of a socket, data output stream and buffered reader  
     Socket socket = new Socket("localhost", 50000);
-      
-    DataOutputStream dout = new DataOutputStream(socket.getOutputStream()); 
-    
+    DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
     BufferedReader bin = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-     
+    
+    //Establishes HELO
     dout.write(("HELO\n").getBytes());  
-    
     String str = (String)bin.readLine();  
-    System.out.println("message1 = "+str); 
     
+    //Gets System Username
     String username = System.getProperty("user.name");
     
+    //Establishes authentication
     dout.write(("AUTH "+username+"\n").getBytes());
-    
     str = (String)bin.readLine();  
-    System.out.println("message2 = "+str); 
     
+    //Is ready
     dout.write(("REDY\n").getBytes());
     
+    //Gets first job
     String job = (String)bin.readLine();  
-    System.out.println("message3 = "+job); 
     
+    //Gets server information
     dout.write(("GETS All\n").getBytes());
     
+    //Splits server information into relevant parameters
     String data = (String)bin.readLine();  
-    System.out.println("message4 = "+data); 
     String[] dataInfo = data.split(" ");
     Integer totalServers = Integer.parseInt(dataInfo[1]);
     
@@ -40,6 +41,7 @@
     String checkServer = null;
     Integer totalServersOfType = 0;
     
+    //Finds server with largest cores
     for (Integer i = 0; i < totalServers; i++) {
     
     	checkServer = bin.readLine();
@@ -58,6 +60,7 @@
     	}
     }
     
+    //Splits relevant parameters of largest server
     String[] biggestServerPars = biggestServer.split(" ");
     String serverName = biggestServerPars[0];
     Integer serverNumber = 0;
@@ -66,7 +69,8 @@
     dout.write(("OK\n").getBytes());
     
     String jobPars = (String)bin.readLine();  
-    	
+    
+    //Does first job
     String[] checkJobPars = jobPars.split(" ");
     
     if (serverNumber > totalServersOfType) {
@@ -79,6 +83,7 @@
     	
     str = (String)bin.readLine();  
     
+    //Loops through necessary requests
     while(!checkJobPars[0].equals("NONE")) {
     	
     	dout.write(("REDY\n").getBytes());
@@ -87,6 +92,7 @@
     	
      	checkJobPars = jobPars.split(" ");
     	
+    	//If there is a job, schedule it
     	if (checkJobPars[0].equals("JOBN")) {
     	
     		if (serverNumber > totalServersOfType) {
@@ -99,16 +105,19 @@
     	}
     	else
     	{
+    		//otherwise continue on with the next request
     		continue;
     	}
     	
     	str = (String)bin.readLine();  
     }
     
+    //Quit
     dout.write(("QUIT\n").getBytes()); 
     
     str=(String)bin.readLine();  
     
+    //Close everything
     dout.flush();  
     dout.close();  
     socket.close();  
