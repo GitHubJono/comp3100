@@ -27,7 +27,7 @@
     String job = (String)bin.readLine();  
     
     //Gets server information
-    dout.write(("GETS All\n").getBytes());
+    dout.write(("GETS Capable\n").getBytes());
     
     //Splits server information into relevant parameters
     String data = (String)bin.readLine();  
