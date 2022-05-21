@@ -8,4 +8,8 @@ run client:
 
 java MyClient.java
 
+run ds-viz:
+
+python3 ./ds_viz.py ../ds-sim/configs/sample-configs/ds-sample-config01.xml ../ds-sim/src/pre-compiled/ff.log -c 10 -s 2
+
 
