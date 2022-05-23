@@ -16,4 +16,8 @@ git push access token:
 
 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
 
+run stage2:
+
+./stage2-test-x86 "java ../../../stage2/MyClientStage2.java" -o tt -n
+
 
