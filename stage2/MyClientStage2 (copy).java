@@ -20,13 +20,14 @@
     dout.write(("AUTH "+username+"\n").getBytes());
     str = (String)bin.readLine();  
     
-    //Ready for first request (for while loop)
+    //Ready for first request
     dout.write(("REDY\n").getBytes());
     
     //Initialise variables
     String job = (String)bin.readLine();  
     String jobPars[] = job.split(" ");
     String selectedServer = "";
+    String checkServer = "";
     String[] selectedServerPars;
     String serverName = "";
     String serverNumber = "";
@@ -40,7 +41,6 @@
     //Loops through necessary requests
     while(!jobPars[0].equals("NONE")) {
     	
-    	//Ready for first request
     	dout.write(("REDY\n").getBytes());
     	
     	job = (String)bin.readLine();  
@@ -51,7 +51,6 @@
     	
     		String bestServerParameters = jobPars[4]+" "+jobPars[5]+" "+jobPars[6];
     		
-    		//Find available and capable servers to schedule jobs to
     		dout.write(("GETS Avail "+bestServerParameters+"\n").getBytes());
     		
     		//splits server information into relevant parameters
@@ -61,12 +60,12 @@
 
     		dout.write(("OK\n").getBytes());
 
-		//If no available servers, find capable server to schedule job to
     		if (totalServers == 0) {
     		
     			str = (String)bin.readLine(); 
+    			//dout.write(("REDY\n").getBytes());
+    			//job = (String)bin.readLine();  
     			
-    			//Find capable servers to schedule jobs to
     			dout.write(("GETS Capable "+bestServerParameters+"\n").getBytes());
     		
     			//splits server information into relevant parameters
@@ -78,13 +77,13 @@
     		
     		}
 		
-		//Select server to schedule job to
 		selectedServer = "";
+    		checkServer = "";
     		
     		for (int i = 0; i < totalServers; i++) {
-    			str = bin.readLine();
+    			checkServer = bin.readLine();
     			if (i == 0) {
-    				selectedServer = str;
+    				selectedServer = checkServer;
     			}
     		}
     		
@@ -95,7 +94,6 @@
     		dout.write(("OK\n").getBytes());
     		str = (String)bin.readLine();
     	
-    		//Schedule job
     		dout.write(("SCHD "+doJobs+" "+serverName+" "+serverNumber+"\n").getBytes());
     		doJobs++;
     		
